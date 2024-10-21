@@ -1,0 +1,7 @@
+FROM node:20
+WORKDIR /app
+RUN git clone https://github.com/Missez/engse207-endpoint-api.git /app
+RUN npm install
+COPY ./serverkey /app
+EXPOSE 8300 8301
+CMD ["npm", "run", "start"]

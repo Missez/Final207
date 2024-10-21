@@ -1,0 +1,65 @@
+services:
+  mssql:
+    # image: mcr.microsoft.com/mssql/server:2017-latest
+    build:
+      context: .
+      dockerfile: dockerfile.mssql
+    container_name: mssql_agent
+    ports:
+      - "1433:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=P@ssw0rd
+    volumes:
+      - ./mssql_data:/var/opt/mssql
+      - ./mssql_scripts:/home/mssql_scripts
+  mongo:
+    # image: mongo
+    build:
+      context: .
+      dockerfile: dockerfile.mongo
+    container_name: mongodb_wallboard
+    restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=P@ssw0rd
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./mongo-data:/data/db
+      - ./mongo_scripts:/home/mongo_scripts
+  parse-server-api:
+    build:
+      context: .
+      dockerfile: dockerfile.Parse-server-api
+    container_name: parse-server-api
+    ports:
+      - "8305:8305"
+    restart: always
+    depends_on:
+      - mongo
+    volumes:
+      - ./serverkey:/app/serverkey
+  endpoint-api:
+    build:
+      context: .
+      dockerfile: dockerfile.endpoint-api
+    container_name: endpoint-api
+    ports:
+      - "8300:8300"
+      - "8301:8301"
+    restart: always
+    depends_on:
+      - mssql
+    volumes:
+      - ./serverkey:/app/serverkey
+  react-admin:
+    build:
+      context: .
+      dockerfile: dockerfile.react-admin
+    container_name: react-admin-app
+    ports:
+      - "3000:80"
+    restart: always
+    depends_on:
+      - parse-server-api

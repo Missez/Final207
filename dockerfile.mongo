@@ -1,0 +1,5 @@
+# Dockerfile for MongoDB
+FROM mongo:latest
+ENV MONGO_INITDB_ROOT_USERNAME root
+ENV MONGO_INITDB_ROOT_PASSWORD P@ssw0rd
+COPY ./mongo_scripts/run_mongo_setup.sh /docker-entrypoint-initdb.d/

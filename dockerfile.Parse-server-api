@@ -1,0 +1,7 @@
+FROM node:18
+WORKDIR /app
+RUN git clone https://github.com/Missez/engse207-parse-server-api.git /app
+RUN npm install
+COPY ./serverkey /app
+EXPOSE 8405
+CMD ["npm", "run", "start"]
